@@ -1,6 +1,6 @@
 var mongoose = require("mongoose");
 mongoose.connect('mongodb://localhost/test');
-var Room = mongoose.model({
+var Room = mongoose.model('Room',{
     "id": String,
 	"title": String,
 	"area": String,
@@ -20,3 +20,14 @@ var Room = mongoose.model({
 	"preventDecay": Boolean,
 	"behaviors": Array
 })
+var testRoom = new Room({
+    "id": "1",
+
+});
+testRoom.save(function (err) {
+  if (err) {
+    console.log(err);
+  } else {
+    console.log('Saved!');
+  }
+});
