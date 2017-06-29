@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 
 var mongoose = require("mongoose");
+var schema = mongoose.Schema;
 mongoose.connect('mongodb://localhost/test');
 
 
@@ -23,7 +24,7 @@ var Room = mongoose.model('Room',{
 	//  },
 	"exits": [{
 		"cmd": {type:String, trim:true},
-		"room": {type:String, ref: 'Room'}
+		"room": {type: schema.Types.ObjectId, ref: 'Room'}
 	}],
 	// "monsters": [String],
 	"items": [{type:String, trim: true}]
@@ -50,7 +51,9 @@ router.get('/rooms/new', function (req, res, next) {
 // EDIT ROOM
 router.get('/rooms/:id', function (req, res, next) {
   Room.find().distinct('area', function (err, areas) {
-		Room.findOne({'_id': req.params.id}).populate().exec(function (err, room){
+		Room.findOne({'_id': req.params.id}).populate('exits.room').exec(function (err, room){
+			console.log(err);
+			console.log(room);
 			if(room == null) {
 				return res.redirect('/rooms');
 			}
