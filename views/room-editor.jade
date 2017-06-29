@@ -1,0 +1,55 @@
+extends layout
+
+block content
+  script(src='/javascripts/new-room-form.js')
+  h2
+    a(href='/rooms', class="plain-link")= "Rooms - "
+    =room ? "Edit " + room.title : "New Room"
+  if room
+    a(href='/rooms/' + room._id + '/json') View Json ->
+  br
+  br
+  form(id="room-editor")
+    if room
+      div(class='field')
+        span(class='label') ID
+        = room._id
+    div(class='field')
+      span(class='label') Title
+      input(name='title', value= room ? room.title : 'Default Room')
+    div(class='field')
+      span(class='label') Area
+      select(id="area-selector")
+        - for(var i = 0; i < areas.length; i++) {
+          - if (room && room.area == areas[i]) {
+            option(selected)= areas[i]
+          - } else {
+            option= areas[i]
+          - }
+        - }
+        input(name='area', value= room ? room.area : 'midgard')
+
+    div(class='field')
+      span(class='label') Content
+      textarea(name='content')= room ? room.content : 'A blank room'
+    div(class='field')
+      span(class='label') Items
+      input(name='items',value= room ? room.items.join(', ') : '')
+    if room
+      h3 Exits
+      for exit in room.exits  
+        div(class='exit-editor')
+          div(class='field')
+            span(class='label') Command
+            input(class='exit-name', value=exit.cmd)
+          div(class='field')
+            span(class='label') Room
+            input(class='exit-name', value=exit.room)
+    unless room
+      button(type='submit') Submit
+  br
+  br
+  br
+  if room
+    button(class="action-delete-room", data-id=room._id.toString()) Delete
+    

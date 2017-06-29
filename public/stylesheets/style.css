@@ -4,5 +4,89 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color:#339;
+}
+
+.plain-link {
+  text-decoration: none;
+}
+
+/* ROOM EDITOR */
+.field {
+  margin-bottom: 15px;
+}
+
+.field input {
+  min-width: 200px;
+  background: #f8f8f8;
+  border:none;
+  border-bottom: 1px solid grey;
+  font-size: 14px;
+}
+
+.field .label {
+  font-size: 16px;
+  padding-right: 20px;
+  min-inline-size: 200px;
+}
+
+.field [name=content] {
+  font-size: 14px;
+  width: 500px;
+  min-height: 30px;
+}
+
+#area-selector {
+  margin-right: 20px;
+}
+
+.exit-editor {
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  width: 400px;
+  margin-bottom: 10px;
+}
+
+/* ROOMS LIST */
+.area-title {
+  padding-top: 30px;
+  padding-bottom: 5px;
+  font-size: 18px;
+  border-bottom: 1px solid #aaa;
+}
+
+.room:nth-child(odd) {
+  background: #f8f8f8;
+}
+
+.room {
+  padding: 10px;
+  padding-bottom: 20px;
+}
+
+.room-title {
+  font-size:16px;
+}
+.room-content {
+  font-style: italic;
+}
+
+.item {
+  font-weight: bold;
+}
+
+.action-delete-room {
+  background: #fcc;
+  font-size: 16px;
+  border:1px solid grey;
+  border-radius: 5px;
+}
+
+.rooms-list .action-delete-room {
+  display:none;
+}
+
+.room:hover .action-delete-room {
+  display: inline;
 }
