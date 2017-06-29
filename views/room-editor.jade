@@ -13,7 +13,7 @@ block content
     if room
       div(class='field')
         span(class='label') ID
-        = room._id
+        span(name="id",room-id=room._id)=room._id
     div(class='field')
       span(class='label') Title
       input(name='title', value= room ? room.title : 'Default Room')
@@ -46,7 +46,9 @@ block content
             span(class='label') Room
             input(class='exit-name', value=exit.room)
     unless room
-      button(type='submit') Submit
+      button(id="post-room") Create
+    else
+        button(id="update-room") update    
   br
   br
   br

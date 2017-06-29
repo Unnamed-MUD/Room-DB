@@ -97,7 +97,16 @@ router.post('/rooms', function(req, res, next) {
     }
   });
 });
-
+router.post('/rooms/:id',function(req,res,next){
+	Room.update({ _id: req.params.id }, { $set: req.body }, function(err) {
+		if (err) {
+			res.send(err.message);
+		}else {
+			res.send({mesage:"Something interesting"});	
+		}
+		
+	});
+});
 function sortIntoAreas (rooms) {
 	var output = {};
 	for(var i = 0; i < rooms.length; i++) {
