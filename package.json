@@ -4,7 +4,8 @@
   "private": false,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "mocha"
+    "restore": "node ./tools/restoretestdb.js",
+    "dump": "node ./tools/dumpdb.js"
   },
   "dependencies": {
     "body-parser": "^1.13.3",
