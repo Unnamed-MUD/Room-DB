@@ -1,0 +1,24 @@
+extends layout
+
+block content
+  h1
+    a(href='/rooms', class="plain-link")= "Rooms - "
+    = room.title
+  div(id="rooms-list")
+    div(class='room')
+      a(href='/rooms/' + room._id + '/json') View Json ->
+      div(class='room-field')
+        = "Area: " + room.area
+      div(class='room-field')
+        div(class='room-content')= 'Content ' + room.content
+      div(class='room-field')
+        |Items:
+        unless room.items.length > 0
+          |  none
+        for item in room.items
+          span(class="item")= item+ ", "
+      br
+      br
+      br
+      br
+      button(class="action-delete-room", data-id=room._id.toString()) Delete

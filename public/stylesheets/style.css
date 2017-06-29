@@ -4,5 +4,65 @@ body {
 }
 
 a {
-  color: #00B7FF;
+  color:#339;
+}
+
+.plain-link {
+  text-decoration: none;
+}
+
+/* ROOM EDITOR */
+.field {
+  margin-bottom: 10px;
+}
+
+.field input {
+  min-width: 200px;
+  background: #f8f8f8;
+  border:none;
+  border-bottom: 1px solid grey;
+}
+
+.field .label {
+  font-size: 16px;
+  padding-right: 20px;
+}
+
+
+/* ROOMS LIST */
+.area-title {
+  padding-top: 20px;
+  font-size: 18px;
+}
+
+.room:nth-child(odd) {
+  background: #f8f8f8;
+}
+
+.room {
+  padding: 10px;
+  padding-bottom: 20px;
+}
+
+.room-title {
+  font-size:16px;
+}
+.room-content {
+  font-style: italic;
+}
+
+.item {
+  font-weight: bold;
+}
+
+.action-delete-room {
+  background: #fcc;
+  font-size: 16px;
+  border:1px solid grey;
+  border-radius: 5px;
+}
+
+/* Single room */
+.room-field {
+  padding:10px 0px;
 }

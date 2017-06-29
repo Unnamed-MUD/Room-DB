@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1 New Room
+  form
+    div(class='field')
+      span(class='label') Title
+      input(name='title')
+    div(class='field')
+      span(class='label') Area
+      input(area='area')
+
+    select
+      - for(var i = 0; i < areas.length; i++) {
+      option= areas[i]
+      - }

@@ -1,0 +1,21 @@
+extends layout
+
+block content
+  h1 Rooms
+  - var keys = Object.keys(sortedRooms);
+  - for( var x = 0; x < keys.length; x++){
+    - var key = keys[x]
+    - var rooms = sortedRooms[key]
+    div(class="area-title")= keys[x]
+    div(id="rooms-list")
+      - for(var i = 0; i < rooms.length; i++) {
+        div(class='room')
+          a(href='rooms/' +rooms[i]._id)
+            div(class='room-title')= rooms[i].title
+          div(class='room-content')= rooms[i].content
+          if rooms[i].items.length > 0
+            |Items: 
+          for item in rooms[i].items
+            span(class="item")= item+ ", "
+      - }
+  - };
