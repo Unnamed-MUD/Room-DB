@@ -5,28 +5,27 @@ var router = express.Router();
 var mongoose = require("mongoose");
 mongoose.connect('mongodb://localhost/test');
 
+
+
 var Room = mongoose.model('Room',{
 	"title": String,
 	"area": String,
-	 "light": Boolean,
-	 "content": String,
-	 "outdoors": Boolean,
-	 "waitMod": {
-		 type: Number,
-		 default: 0
-	 },
-	 "moveMod": {
-		 type: Number,
-		 default: 0
-	 },
-	 "exits": [{
-		 "cmd": {type:String}
-	 }],
+	"content": String,
+	"light": {type:Boolean, default:true},
+	"outdoors": {type:Boolean, default:false},
+	//  "waitMod": {
+	// 	 type: Number,
+	// 	 default: 0
+	//  },
+	//  "moveMod": {
+	// 	 type: Number,
+	// 	 default: 0
+	//  },
+	"exits": [{
+		"cmd": {type:String, trim:true}
+	}],
 	// "monsters": [String],
-	 "items": [String]
-	// "hasEvents": Boolean,
-	// "preventRecall": Boolean,
-	// "preventDecay": Boolean
+	"items": [{type:String, trim: true}]
 });
 
 
@@ -35,17 +34,19 @@ router.get('/rooms', function (req, res, next) {
    res.render('rooms', {
 		 rooms:rooms,
 		 sortedRooms:sortIntoAreas(rooms),
-
 	 });
   });
 });
 
+// NEW ROOM
 router.get('/rooms/new', function (req, res, next) {
   Room.find().distinct('area', function (err, areas) {
-    res.render('new-room', {areas:areas});
+		// use the editor template, but dont have a room subobject passed in
+    res.render('room-editor', {areas:areas});
   });
 });
 
+// LIST ROOMs
 router.get('/rooms/:id', function (req, res, next) {
 	Room.findOne({'_id': req.params.id}, function (err, room){
 		if(room == null) {
@@ -53,6 +54,18 @@ router.get('/rooms/:id', function (req, res, next) {
 		}
 		res.render('room', {room:room});
 	});
+});
+
+// EDIT ROOM
+router.get('/rooms/:id/edit', function (req, res, next) {
+  Room.find().distinct('area', function (err, areas) {
+		Room.findOne({'_id': req.params.id}, function (err, room){
+			if(room == null) {
+				return res.redirect('/rooms');
+			}
+	    res.render('room-editor', {areas:areas, room:room});
+		});
+  });
 });
 
 router.get('/rooms/:id/json', function (req, res, next) {
@@ -79,14 +92,14 @@ router.post('/rooms', function(req, res, next) {
   // we can just push the json in the body into the model :)
   var newRoom = new Room(req.body);
 
-  newRoom.save(function (err) {
+  newRoom.save(function (err, room) {
     if (err) {
       console.log(err);
       res.statusCode = 500;
       res.statusMessage = "Problem with room creation??";
-      res.end();
+			res.send({message:"Something went wrong guys: " + err.message});
     } else {
-      res.end("thanks for the room");
+      res.send({room:room, _id: room._id});
     }
   });
 });

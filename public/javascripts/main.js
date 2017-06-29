@@ -9,7 +9,7 @@ $(function () {
           success: function(result) {
             window.location = '/rooms'
           }
-      })
+      });
     }
   });
 });

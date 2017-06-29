@@ -1,0 +1,31 @@
+extends layout
+
+block content
+  script(src='/javascripts/new-room-form.js')
+  h2
+    a(href='/rooms', class="plain-link")= "Rooms - "
+    =room ? "Edit " + room.title : "New Room"
+  form(id="room-editor")
+    div(class='field')
+      span(class='label') Title
+      input(name='title', value= room ? room.title : 'Default Room')
+    div(class='field')
+      span(class='label') Area
+      select(id="area-selector")
+        - for(var i = 0; i < areas.length; i++) {
+          - if (room && room.area == areas[i]) {
+            option(selected)= areas[i]
+          - } else {
+            option= areas[i]
+          - }
+        - }
+        input(name='area', value= room ? room.area : 'midgard')
+
+    div(class='field')
+      span(class='label') Content
+      textarea(name='content')= room ? room.content : 'A blank room'
+    div(class='field')
+      span(class='label') Items
+      input(name='items',value= room ? room.items.join(', ') : '')
+    unless room
+      button(type='submit') Submit
