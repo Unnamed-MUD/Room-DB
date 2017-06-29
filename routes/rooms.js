@@ -22,7 +22,8 @@ var Room = mongoose.model('Room',{
 	// 	 default: 0
 	//  },
 	"exits": [{
-		"cmd": {type:String, trim:true}
+		"cmd": {type:String, trim:true},
+		"room": {type:String, ref: 'Room'}
 	}],
 	// "monsters": [String],
 	"items": [{type:String, trim: true}]
@@ -46,24 +47,14 @@ router.get('/rooms/new', function (req, res, next) {
   });
 });
 
-// LIST ROOMs
-router.get('/rooms/:id', function (req, res, next) {
-	Room.findOne({'_id': req.params.id}, function (err, room){
-		if(room == null) {
-			return res.redirect('/rooms');
-		}
-		res.render('room', {room:room});
-	});
-});
-
 // EDIT ROOM
-router.get('/rooms/:id/edit', function (req, res, next) {
+router.get('/rooms/:id', function (req, res, next) {
   Room.find().distinct('area', function (err, areas) {
-		Room.findOne({'_id': req.params.id}, function (err, room){
+		Room.findOne({'_id': req.params.id}).populate().exec(function (err, room){
 			if(room == null) {
 				return res.redirect('/rooms');
 			}
-	    res.render('room-editor', {areas:areas, room:room});
+	    res.render('room-editor', {areas:areas, room:	room});
 		});
   });
 });

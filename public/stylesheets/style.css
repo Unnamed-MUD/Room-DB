@@ -40,6 +40,14 @@ a {
   margin-right: 20px;
 }
 
+.exit-editor {
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  width: 400px;
+  margin-bottom: 10px;
+}
+
 /* ROOMS LIST */
 .area-title {
   padding-top: 30px;

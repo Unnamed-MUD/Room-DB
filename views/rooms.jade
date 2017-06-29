@@ -14,8 +14,6 @@ block content
         div(class='room')
           a(href='/rooms/' +rooms[i]._id, class='plain-link')
             span(class='room-title')= rooms[i].title || "Undefined Title "
-          a(href='/rooms/' +rooms[i]._id + '/edit')
-            |    Edit
           div(class='room-content')= rooms[i].content
           
           if rooms[i].items.length > 0
