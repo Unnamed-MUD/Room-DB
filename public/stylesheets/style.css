@@ -16,6 +16,10 @@ body {
   clear:both;
 }
 
+.float-right {
+  float:right;
+}
+
 a {
   color:#339;
 }
@@ -93,6 +97,8 @@ a {
   margin-left: 20px;
 }
 
+
+
 #post-room {
   background: #cfc;
   font-size: 16px;
@@ -134,6 +140,8 @@ a {
   font-size:16px;
 }
 .room-content {
+  font-size: 16px;
+  padding: 5px 0px 10px 0px;
   font-style: italic;
 }
 

@@ -12,15 +12,17 @@ block content
     div(class="rooms-list")
       - for(var i = 0; i < rooms.length; i++) {
         div(class='room')
+          button(class="action-delete-room float-right", data-id=rooms[i]._id.toString()) Delete
           a(href='/rooms/' +rooms[i]._id, class='plain-link')
             span(class='room-title')= rooms[i].title || "Undefined Title "
           div(class='room-content')= rooms[i].content
           
           if rooms[i].items.length > 0
             |Items: 
-          for item in rooms[i].items
-            span(class="item")= item+ ", "
-          br
-          button(class="action-delete-room", data-id=rooms[i]._id.toString()) Delete
+            for item in rooms[i].items
+              span(class="item")= item+ ", "
+            br
+          if rooms[i].exits.length < 1
+            span(class='item') No Exits
       - }
   - };
