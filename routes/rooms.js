@@ -97,16 +97,19 @@ router.post('/rooms', function(req, res, next) {
     }
   });
 });
+
 router.post('/rooms/:id',function(req,res,next){
-	Room.update({ _id: req.params.id }, { $set: req.body }, function(err) {
+	Room.update({ _id: req.params.id }, { $set: req.body }, function(err, room) {
 		if (err) {
+			res.statusCode = 500;
 			res.send(err.message);
 		}else {
-			res.send({mesage:"Something interesting"});	
+			res.send({mesage:"Inserted room!", room:room});
 		}
-		
+
 	});
 });
+
 function sortIntoAreas (rooms) {
 	var output = {};
 	for(var i = 0; i < rooms.length; i++) {

@@ -1,6 +1,19 @@
 body {
-  padding: 50px;
+  margin:0px;
+  padding:0px;
+  background: #eee;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#main-container {
+  margin:0px auto;
+  width:950px;
+  padding: 20px;
+  background: #fff;
+}
+
+.clear {
+  clear:both;
 }
 
 a {
@@ -12,6 +25,15 @@ a {
 }
 
 /* ROOM EDITOR */
+.error {
+  display:none;
+  background: #ffa9a9;
+  font-size: 15px;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
 .field {
   margin-bottom: 15px;
 }
@@ -40,12 +62,55 @@ a {
   margin-right: 20px;
 }
 
-.exit-editor {
-  background: #f8f8f8;
+.exit-object {
+  background: #eee;
   padding: 10px;
+  width:320px;
   border-radius: 5px;
-  width: 400px;
   margin-bottom: 10px;
+}
+.exit-object:hover {
+  width:400px;
+}
+
+.exit-left {
+  float:left;
+  width:320px;
+}
+.exit-right {
+  float:left;
+  display:none;
+}
+.exit-object:hover .exit-right {
+  display: block;
+}
+
+#exit-object-template {
+  display: none;
+}
+
+.add-exit {
+  margin-left: 20px;
+}
+
+#post-room {
+  background: #cfc;
+  font-size: 16px;
+  border:1px solid grey;
+  border-radius: 5px;
+}
+
+#update-room {
+  background: #cfc;
+  font-size: 16px;
+  border:1px solid grey;
+  border-radius: 5px;
+  float:right;
+}
+
+.button-wrangler {
+  width:300px;
+  height:20px;
 }
 
 /* ROOMS LIST */
