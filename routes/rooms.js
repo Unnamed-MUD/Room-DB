@@ -105,6 +105,7 @@ router.post('/rooms', function(req, res, next) {
 });
 
 router.post('/rooms/:id',function(req,res,next){
+	console.log(req.body);
 	Room.update({ _id: req.params.id }, { $set: req.body }, function(err, room) {
 		if (err) {
 			res.statusCode = 500;

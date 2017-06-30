@@ -8,7 +8,7 @@ block content
   if room
     a(href='/rooms/' + room._id + '/json') View Json ->
   br
-  br
+  hr
   form(id="room-editor")
     if room
       div(class='field')
@@ -37,18 +37,20 @@ block content
       span(class='label') Items
       input(name='items',value= room ? room.items.join(', ') : '')
     br
+    span(class='check-option')
+      input(id='light-box', name='light', type='checkbox', checked=room ? room.light : false)
+      label(for='light-box') Light
+    span(class='check-option')
+      input(id='outdoors-box', name='outdoors', type='checkbox', checked=room ? room.outdoors : false)
+      label(for='outdoors-box') Outdoors
+    br
+    hr
     h3 Exits
       button(class='add-exit') Add
     div(id='exits-list')
       if room
         for exit in room.exits  
           +exitObject(exit)
-    span(class='check-option')
-      input(id='light-box', name='light', type='checkbox', checked=room ? room.light : false)
-      label(for='light-box') Light
-    span(class='check-option')
-      input(id='outside-box', name='outside', type='checkbox', checked=room ? room.outside : false)
-      label(for='outside-box') Outside
 
   br
   br
@@ -58,7 +60,7 @@ block content
       button(id="post-room") Create
     else
       button(class="action-delete-room", data-id=room._id.toString()) Delete
-      button(id="update-room") update 
+      button(id="update-room") Save 
   div(class='modal-cover')
   div(class='modal')
     div(class='modal-content')
@@ -89,6 +91,6 @@ block content
           input(name='exit-display', class='exit-name', value= exit ? exit.room.title : '')          
           input(name='exit-room', class='exit-name hidden', value= exit ? exit.room._id : '')
       div(class='exit-right')
-        button(class='remove-exit') Remove
+        button(class='remove-exit') Remove Exit
       div(class='clear')
     

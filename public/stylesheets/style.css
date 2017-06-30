@@ -179,6 +179,26 @@ a {
   border-top: 1px solid grey;
 }
 
+#room-suggestion-template {
+  display: none;
+}
+
+hr {
+  max-width: 500px;
+    margin: 20px 0px;
+    height: 0px;
+
+    border: 1px solid #ccc;
+}
+
+[name=exit-display]:hover {
+  cursor: pointer;
+}
+
+[name=exit-display] {
+  border:none !important;
+}
+
 /* ROOMS LIST */
 /* -------------------------------- */
 

@@ -139,10 +139,13 @@ function getData() {
         title: $('[name=title]').val(),
         area: $('[name=area]').val(),
         content: $('[name=content]').val(),
-        exits: []
+        exits: [],
+        light: $('[name=light]').is(':checked'),
+        outdoors: $('[name=outdoors]').is(':checked')
     };
     body.exits = GetExits();
     body.items = GetItems();
+    console.log(body);
     return body;
 }
 
@@ -153,15 +156,14 @@ function UpdateSuggestions () {
   var titleMatches = [];
   var searchString = $(this).val().toLowerCase();
 
-  if(searchString.length == 0) {
-    return;
-  }
-
   for(var i = 0; i < roomsList.length; i++) {
     if(roomsList[i].title.toLowerCase().indexOf(searchString) > -1) {
       titleMatches.push(roomsList[i]);
     }
   }
+
+  // reduce to 5 suggestions
+  titleMatches = titleMatches.slice(0, 4);
 
   for(i = 0; i < titleMatches.length; i++) {
     var $el = $($template).clone().appendTo('#suggestions');
@@ -198,7 +200,7 @@ function ShowModal (e){
   $('.modal').show();
   $('.modal-cover').show();
   $('[name=room-filter]').val('').focus();
-    $('#suggestions').empty();
+  $('#suggestions').empty();
 }
 
 function HideModal () {
