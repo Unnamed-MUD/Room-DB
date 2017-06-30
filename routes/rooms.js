@@ -31,6 +31,10 @@ var Room = mongoose.model('Room',{
 });
 
 
+router.get('/map', function (req, res, next) {
+	res.render('map');
+});
+
 router.get('/rooms', function (req, res, next) {
   Room.find().sort('area').exec(function (err, rooms) {
    res.render('rooms', {
