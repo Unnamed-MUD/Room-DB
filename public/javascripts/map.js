@@ -9,13 +9,14 @@ var roomsList = [];
 var ctx;
 
 var goalDistance = 100;
-var safeDistance = 90;
+var safeDistance = 120;
 
 function go () {
   ctx = document.getElementById('canvas').getContext('2d');
-  sun.src = 'https://mdn.mozillademos.org/files/1456/Canvas_sun.png';
-  moon.src = 'https://mdn.mozillademos.org/files/1443/Canvas_moon.png';
-  earth.src = 'https://mdn.mozillademos.org/files/1429/Canvas_earth.png';
+  ctx.font="15px Georgia";
+  ctx.textAlign='center';
+  ctx.baseline='middle';
+
   draw();
 
   $.ajax({
@@ -62,11 +63,15 @@ function SetupRoom (room) {
 
 function GoRoom (room) {
   ctx.strokeStyle = 'rgb(0, 0, 0)';
-  room.x += (Math.random() - 0.5) * 0.1;
-  room.y += (Math.random() - 0.5) * 0.1;
+  room.x += (Math.random() - 0.5) * 0.05;
+  room.y += (Math.random() - 0.5) * 0.05;
 
-
+  ctx.fillStyle='rgb(0,0,0)';
+  ctx.fillText(room.title,room.x,room.y -25);
+  ctx.fillStyle='rgb(255,255,255)';
+  ctx.fillRect(room.x- 20, room.y -20,40, 40);
   ctx.strokeRect(room.x- 20, room.y -20,40, 40);
+
 
   room.exits.forEach(function(exit) {
     target = FindRoom(exit.room);
@@ -83,13 +88,13 @@ function GoRoom (room) {
 
   var tempX = room.x;
   var tempY = room.y;
-  room.x += (room.x - room.dx)*0.95;
-  room.y += (room.y - room.dy)*0.95;
+  room.x += (room.x - room.dx)*0.98;
+  room.y += (room.y - room.dy)*0.98;
   room.dx = tempX;
   room.dy = tempY;
 
-  room.x = Math.max(0, Math.min(800, room.x));
-  room.y = Math.max(0, Math.min(600, room.y));
+  room.x = Math.max(50, Math.min(750, room.x));
+  room.y = Math.max(50, Math.min(650, room.y));
 }
 
 function RepulseRooms () {
@@ -104,8 +109,8 @@ function RepulseRooms () {
           var angle = AngleTo(room2, room1);
           Move (room1, angle, change * 0.5);
           Move (room2, angle, change * -0.5);
-          ctx.strokeStyle = 'rgba(255, 0, 0, 0.4)';
-          DrawLine(room1.x, room1.y, room2.x + Math.random()*4, room2.y+ Math.random()*4);
+        //  ctx.strokeStyle = 'rgba(255, 0, 0, 0.4)';
+      //    DrawLine(room1.x, room1.y, room2.x + Math.random()*4, room2.y+ Math.random()*4);
         }
       }
     }
