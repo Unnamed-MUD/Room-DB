@@ -1,20 +1,55 @@
+// GLOBALS
+var roomsList = [];
+
+var $autocompleteTarget = null; // which field we put the room id once user picks a suggestion
+
 $(function () {
-    $('#area-selector').change(function () {
-        var pickedArea = $(this).find('option:selected').text();
-        $('input[name=area]').val(pickedArea);
-    });
+  $.ajax({
+      url:'/rooms/json',
+      type:"GET",
+      dataType:"json",
+      success: function(data){
+          roomsList = data;
+      },
+      error: function (e) {
+          console.log(e);
+      }
+  });
 
-    $('input[name=items]').bind('change', function () {
-        var newString = forceSlug($(this).val());
-        $(this).val(newString);
-    });
+  $('#area-selector').change(function () {
+      var pickedArea = $(this).find('option:selected').text();
+      $('input[name=area]').val(pickedArea);
+  });
 
-    $('#post-room').click (postForm);
-    $('#update-room').click (putForm);
-    // takes a string and makes-it-into-a-slug
-    $('.remove-exit').click(removeExit);
-    $('.add-exit').click(AddExitElement);
+  $('input[name=items]').bind('change', function () {
+      var newString = forceSlug($(this).val());
+      $(this).val(newString);
+  });
+
+  $('#post-room').click (postForm);
+  $('#update-room').click (putForm);
+  // takes a string and makes-it-into-a-slug
+  $('.remove-exit').click(removeExit);
+  $('.add-exit').click(AddExitElement);
+
+  $('[name=room-filter]').on('keyup', UpdateSuggestions);
+  $(document).on('click', '.room-suggestion', PickSuggestion);
+
+  $(document).on('click', '[name=exit-display]', ShowModal);
+  $('.modal').on('click', function (e){
+    if(e.target == this) {
+      HideModal();
+    }
+  });
+
+  $(document).keyup(function(e) {
+    if (e.keyCode === 27) {
+      HideModal();
+    } // esc
+  });
 });
+
+
 
 function removeExit(e) {
   console.log('remove?');
@@ -111,6 +146,39 @@ function getData() {
     return body;
 }
 
+function UpdateSuggestions () {
+  $('#suggestions').empty();
+  var $template = $('#room-suggestion-template').find('.room-suggestion');
+
+  var titleMatches = [];
+  var searchString = $(this).val().toLowerCase();
+
+  if(searchString.length == 0) {
+    return;
+  }
+
+  for(var i = 0; i < roomsList.length; i++) {
+    if(roomsList[i].title.toLowerCase().indexOf(searchString) > -1) {
+      titleMatches.push(roomsList[i]);
+    }
+  }
+
+  for(i = 0; i < titleMatches.length; i++) {
+    var $el = $($template).clone().appendTo('#suggestions');
+    $el.find('.room-suggestion-title').html(titleMatches[i].title);
+    $el.find('.room-suggestion-id').html(titleMatches[i]._id);
+    $el.find('.room-suggestion-content').html(titleMatches[i].content.substring(0,80) + ' ...');
+  }
+}
+
+function PickSuggestion() {
+  var title = $(this).find('.room-suggestion-title').html();
+  var id = $(this).find('.room-suggestion-id').html();
+  $($autocompleteTarget).find('[name=exit-display]').val(title);
+  $($autocompleteTarget).find('[name=exit-room]').val(id);
+  HideModal();
+}
+
 function forceSlug (input) {
     if(input == '') return '';
 
@@ -122,4 +190,19 @@ function forceSlug (input) {
 function AddExitElement (e) {
   e.preventDefault();
   $('#exit-object-template').find('.exit-object').clone().appendTo('#exits-list');
+}
+
+function ShowModal (e){
+  $autocompleteTarget = $(this).first().parent();
+
+  $('.modal').show();
+  $('.modal-cover').show();
+  $('[name=room-filter]').val('').focus();
+    $('#suggestions').empty();
+}
+
+function HideModal () {
+  $autocompleteTarget = null;
+  $('.modal').hide();
+  $('.modal-cover').hide();
 }

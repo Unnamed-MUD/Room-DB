@@ -43,20 +43,40 @@ block content
       if room
         for exit in room.exits  
           +exitObject(exit)
-    div(class='error hidden')   
+    span(class='check-option')
+      input(id='light-box', name='light', type='checkbox', checked=room ? room.light : false)
+      label(for='light-box') Light
+    span(class='check-option')
+      input(id='outside-box', name='outside', type='checkbox', checked=room ? room.outside : false)
+      label(for='outside-box') Outside
+
   br
   br
-  
+  div(class='error hidden')
   div(class='button-wrangler')
     unless room
       button(id="post-room") Create
     else
       button(class="action-delete-room", data-id=room._id.toString()) Delete
       button(id="update-room") update 
-      
+  div(class='modal-cover')
+  div(class='modal')
+    div(class='modal-content')
+      h2 Link to room
+      input(name='room-filter')
+      div(id='suggestions')
+      br
+      br
   //- hidden dom element, so jquery can copy it to make more exits
   div(id='exit-object-template')
     +exitObject()
+    
+  div(id='room-suggestion-template')  
+    div(class='room-suggestion')
+      div(class='room-suggestion-title')
+      div(class='room-suggestion-content')
+      div(class='room-suggestion-id hidden')
+
     
   mixin exitObject(exit)
     div(class='exit-object')
@@ -66,7 +86,8 @@ block content
           input(name='exit-cmd', class='exit-name', value= exit ? exit.cmd : '')
         div(class='field')
           span(class='label') Room
-          input(name='exit-room', class='exit-name', value= exit ? exit.room._id : '')
+          input(name='exit-display', class='exit-name', value= exit ? exit.room.title : '')          
+          input(name='exit-room', class='exit-name hidden', value= exit ? exit.room._id : '')
       div(class='exit-right')
         button(class='remove-exit') Remove
       div(class='clear')

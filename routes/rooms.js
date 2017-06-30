@@ -40,6 +40,12 @@ router.get('/rooms', function (req, res, next) {
   });
 });
 
+router.get('/rooms/json', function (req, res, next) {
+  Room.find().sort('area').exec(function (err, rooms) {
+   res.send(rooms);
+  });
+});
+
 // NEW ROOM
 router.get('/rooms/new', function (req, res, next) {
   Room.find().distinct('area', function (err, areas) {
