@@ -4,7 +4,7 @@
   "private": false,
   "scripts": {
     "start": "node ./bin/www",
-    "restore": "node ./tools/restoretestdb.js",
+    "restore": "mongo --eval 'db.dropDatabase();';node ./tools/restoretestdb.js",
     "dump": "node ./tools/dumpdb.js"
   },
   "dependencies": {
