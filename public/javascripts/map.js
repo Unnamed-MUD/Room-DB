@@ -14,7 +14,7 @@ var startRoomID; // string of ID of root room
 var width = 400;
 var height = 600;
 
-var roomSize = 30;
+var roomSize = 40;
 
 var goalDistance = 100;
 var safeDistance = 60;
@@ -61,7 +61,7 @@ function LoadInRooms () {
 
  // run 60 physics steps in a row before we start rendering
  // let the thing setttle
-  for(var i = 0; i < 60; i++) {
+  for(var i = 0; i < 0; i++) {
     mapRoomsList.forEach(function(room) {
       UpdateRoom(room);
     });
@@ -139,7 +139,7 @@ function PlaceByCommandReverse (room, nextRoom) {
 }
 
 function draw() {
-  ctx.fillStyle = 'rgb(245, 245, 255)';
+  ctx.fillStyle = 'rgb(235, 235, 245)';
   ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
   ctx.fillRect(0,0, width, height);
 
@@ -173,7 +173,7 @@ function SetupRoom (room) {
 }
 
 function DrawRoomBox (room) {
-  ctx.strokeStyle = 'rgb(0,0,0)';
+  ctx.strokeStyle = 'rgb(200,200,200)';
   if(room._id == startRoomID) {
     ctx.lineWidth = 2;
     ctx.fillStyle='rgb(245,220,200)';
@@ -235,8 +235,8 @@ function UpdateRoom (room) {
 
   var tempX = room.x;
   var tempY = room.y;
-  room.x += (room.x - room.dx)*0.95;
-  room.y += (room.y - room.dy)*0.95;
+  room.x += (room.x - room.dx)*0.97;
+  room.y += (room.y - room.dy)*0.97;
   room.dx = tempX;
   room.dy = tempY;
 
@@ -273,6 +273,7 @@ function HandleMouseMove(e){
     var room = mapRoomsList[i];
     if(x < room.x + roomSide && x > room.x -roomSide) {
       if(y < room.y + roomSide && y > room.y -roomSide) {
+
         hoverRoom = room;
         $('body').css('cursor', 'pointer');
         return;

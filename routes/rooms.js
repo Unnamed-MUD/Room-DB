@@ -95,7 +95,9 @@ router.delete('/rooms/:id', function (req, res, next) {
 		if(err) {
 			res.status(500).end(err.message);
 		} else {
-			res.send("Removed room " + room._id);
+			RemoveLinks(room._id, function () {
+				res.send("Removed room " + room._id);
+			})
 		}
 	});
 });
@@ -129,6 +131,22 @@ router.post('/rooms/:id',function(req,res,next){
 
 	});
 });
+
+// remove all exits to an room id, cleanup needed after removing a room
+function RemoveLinks (id, callback) {
+	Room.find({exits:{$elemMatch: {room: id}}}, function (err, rooms) {
+		for(var i=0; i < rooms.length; i++) {
+			var room = rooms[i];
+			for (var k = room.exits.length-1; k >=0; k--) {
+				if(room.exits[k].room.toString() == id.toString()) {
+					room.exits.splice(k, 1);
+				}
+			}
+			room.save();
+		}
+		callback();
+	});
+}
 
 function sortIntoAreas (rooms) {
 	var output = {};
