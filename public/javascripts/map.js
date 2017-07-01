@@ -16,13 +16,15 @@ var height = 600;
 
 var roomSize = 30;
 
-var goalDistance = 80;
-var safeDistance = 80;
+var goalDistance = 100;
+var safeDistance = 60;
+
+var hoverRoom = null;
 
 function Start () {
   ctx = document.getElementById('canvas').getContext('2d');
   ctx.translate(0.5, 0.5);
-  ctx.font="15px Georgia";
+  ctx.font="14px sans-serif";
   ctx.textAlign='center';
   ctx.baseline='middle';
 
@@ -44,6 +46,7 @@ function Start () {
   });
 
   $('#canvas').click(HandleMapClick);
+  $( "#canvas" ).mousemove(HandleMouseMove);
 }
 
 function LoadInRooms () {
@@ -54,7 +57,15 @@ function LoadInRooms () {
   SetupRoom(first);
   Teleport(first, width/2, height/2);
   SpawnIn(first);
-  LoadExitRooms(first, 1);
+  LoadExitRooms(first, 2);
+
+ // run 60 physics steps in a row before we start rendering
+ // let the thing setttle
+  for(var i = 0; i < 60; i++) {
+    mapRoomsList.forEach(function(room) {
+      UpdateRoom(room);
+    });
+  }
 }
 
 function LoadExitRooms (room, depth) {
@@ -93,6 +104,12 @@ function PlaceByCommand (room, nextRoom, command) {
     Teleport(nextRoom, room.x, room.y + goalDistance);
   } else if(command == 'north') {
     Teleport(nextRoom, room.x, room.y - goalDistance);
+  } else if(command == 'up') {
+    Teleport(nextRoom, room.x - goalDistance* 0.6, room.y - goalDistance* 0.6);
+  } else if(command == 'down') {
+    Teleport(nextRoom, room.x + goalDistance* 0.6, room.y + goalDistance* 0.6);
+  } else {
+    Teleport(nextRoom, room.x + goalDistance* 0.6, room.y + goalDistance* 0.6);
   }
 }
 
@@ -105,22 +122,36 @@ function PlaceByCommandReverse (room, nextRoom, command) {
     Teleport(nextRoom, room.x, room.y - goalDistance);
   } else if(command == 'north') {
     Teleport(nextRoom, room.x, room.y + goalDistance);
+  } else if(command == 'up') {
+    Teleport(nextRoom, room.x + goalDistance* 0.6, room.y + goalDistance * 0.6);
+  } else if(command == 'down') {
+    Teleport(nextRoom, room.x - goalDistance* 0.6, room.y - goalDistance * 0.6);
+  }else {
+    Teleport(nextRoom, room.x - goalDistance* 0.6, room.y - goalDistance* 0.6);
   }
 }
 
 function draw() {
-  ctx.fillStyle = 'rgb(240, 240, 255)';
+  ctx.fillStyle = 'rgb(245, 245, 255)';
   ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
   ctx.fillRect(0,0, width, height);
 
   RepulseRooms();
 
+
+  mapRoomsList.forEach(function(room) {
+    UpdateRoom(room);
+  });
   mapRoomsList.forEach(function(room) {
     DrawRoomBox(room);
   });
   mapRoomsList.forEach(function(room) {
-    UpdateRoom(room);
+    DrawRoom(room);
   });
+  mapRoomsList.forEach(function(room) {
+    DrawRoomTitle(room);
+  });
+
 
   //  ctx.fillRect(100,199 ,30, 30);
   window.requestAnimationFrame(draw);
@@ -138,20 +169,50 @@ function DrawRoomBox (room) {
   ctx.strokeStyle = 'rgb(0,0,0)';
   if(room._id == startRoomID) {
     ctx.lineWidth = 2;
-    ctx.fillStyle='rgb(245,220,255)';
+    ctx.fillStyle='rgb(245,220,200)';
   } else {
     ctx.lineWidth = 1;
     ctx.fillStyle='rgb(255,255,255)';
+  }
+  if(hoverRoom != null && room._id == hoverRoom._id) {
+    ctx.lineWidth = 6;
   }
   ctx.fillRect(room.x- roomSize/2,  room.y -roomSize/2, roomSize, roomSize);
   ctx.strokeRect(room.x- roomSize/2,  room.y -roomSize/2, roomSize, roomSize);
 }
 
-function UpdateRoom (room) {
+function DrawRoomTitle (room) {
+    ctx.fillStyle='rgb(255,255,255)';
+    ctx.fillText(room.title,room.x +2,room.y -25+1, 100);
+    ctx.fillText(room.title,room.x -2,room.y -25, 100);
+    ctx.fillStyle='rgb(0,0,0)';
+    ctx.fillText(room.title,room.x,room.y -25, 100);
+}
+
+function DrawRoom (room) {
   ctx.lineWidth = 1;
   ctx.strokeStyle = 'rgb(0, 0, 0)';
-  room.x += (Math.random() - 0.5) * 0.05;
-  room.y += (Math.random() - 0.5) * 0.05;
+  room.x += (Math.random() - 0.5) * 0.01;
+  room.y += (Math.random() - 0.5) * 0.01;
+
+  room.exits.forEach(function(exit) {
+    target = FindRoom(exit.room, mapRoomsList);
+    if(target){
+      if(ExitInRoom(room._id, target)) {
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgb(0,0,0)';
+      } else {
+        ctx.strokeStyle = 'rgb(100,0,0)';
+        ctx.lineWidth= 1;
+      }
+      DrawLine(room.x, room.y, target.x, target.y);
+    }
+  });
+}
+
+function UpdateRoom (room) {
+  room.x += (Math.random() - 0.5) * 0.01;
+  room.y += (Math.random() - 0.5) * 0.01;
 
   room.exits.forEach(function(exit) {
     target = FindRoom(exit.room, mapRoomsList);
@@ -161,16 +222,6 @@ function UpdateRoom (room) {
       var angle = AngleTo(target, room);
       Move (room, angle, change * 0.5);
       Move (target, angle, change * -0.5);
-
-      if(ExitInRoom(room._id, target)) {
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = 'rgb(0,0,0)';
-      } else {
-        ctx.strokeStyle = 'rgb(100,0,0)';
-        ctx.lineWidth= 1;
-      }
-      DrawLine(room.x, room.y, target.x, target.y);
-
     }
   });
 
@@ -181,13 +232,8 @@ function UpdateRoom (room) {
   room.dx = tempX;
   room.dy = tempY;
 
-  ctx.fillStyle='rgb(255,255,255)';
-  ctx.fillText(room.title,room.x +2,room.y -25+1);
-  ctx.fillStyle='rgb(0,0,0)';
-  ctx.fillText(room.title,room.x,room.y -25);
-
-  room.x = Math.max(25, Math.min(width - 25, room.x));
-  room.y = Math.max(25, Math.min(height -25, room.y));
+  // room.x = Math.max(25, Math.min(width - 25, room.x));
+  // room.y = Math.max(25, Math.min(height -25, room.y));
 }
 
 function HandleMapClick(e){
@@ -196,7 +242,7 @@ function HandleMapClick(e){
   ctx.fillRect(x,y,100,100);
   x -= $(this)[0].getBoundingClientRect().left;
   y -= $(this)[0].getBoundingClientRect().top;
-  console.log(x + ' ' + y);
+
   var roomSide = roomSize / 2.0;
   for(var i =0 ; i < mapRoomsList.length; i++){
     var room = mapRoomsList[i];
@@ -209,6 +255,27 @@ function HandleMapClick(e){
       }
     }
   }
+}
+
+function HandleMouseMove(e){
+  var x = e.clientX, y = e.clientY;
+  x -= $(this)[0].getBoundingClientRect().left;
+  y -= $(this)[0].getBoundingClientRect().top;
+
+  console.log(x + ' ' + y);
+  var roomSide = roomSize / 2.0;
+  for(var i =0 ; i < mapRoomsList.length; i++){
+    var room = mapRoomsList[i];
+    if(x < room.x + roomSide && x > room.x -roomSide) {
+      if(y < room.y + roomSide && y > room.y -roomSide) {
+        hoverRoom = room;
+        $('body').css('cursor', 'pointer');
+        return;
+      }
+    }
+  }
+  $('body').css('cursor', 'default');
+  hoverRoom = null;
 }
 
 function RepulseRooms () {
@@ -292,7 +359,6 @@ function SpawnIn (room) {
 function ExitInRoom (id, room) {
   for(var i = 0; i < room.exits.length; i++) {
     var exit = room.exits[i];
-  //  console.log(exit.room + " " + id + ((exit.room == id) ? ' TRUEEEEEE' : ''));
     if(exit.room == id) {
       return true;
     }
