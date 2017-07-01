@@ -32,7 +32,25 @@ a {
   text-decoration: none;
 }
 
+.menu-bar {
+  font-size: 16px;
+}
+
+.menu-bar a {
+  margin-right: 10px;
+}
+
 /* ROOM EDITOR */
+.room-editor-wrapper {
+  width:500px;
+  float:left;
+  padding-left:20px;
+}
+
+#canvas {
+  float:left;
+}
+
 .error {
   display:none;
   background: #ffa9a9;

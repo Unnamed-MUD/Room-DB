@@ -35,7 +35,7 @@ $(function () {
   $('[name=room-filter]').on('keyup', UpdateSuggestions);
   $(document).on('click', '.room-suggestion', PickSuggestion);
 
-  $(document).on('click', '[name=exit-display]', ShowModal);
+  $(document).on('click focus', '[name=exit-display]', ShowModal);
   $('.modal').on('click', function (e){
     if(e.target == this) {
       HideModal();
@@ -69,8 +69,11 @@ function postForm (e) {
         contentType:"application/json; charset=utf-8",
         dataType:"json",
         success: function(){
-            console.log('success');
+          if(window.location.toString().indexOf('map') != -1) {
+            window.location.reload(true);
+          } else {
             window.location = '/rooms';
+          }
         },
         error: function (e) {
             console.log(e);
@@ -91,8 +94,12 @@ function putForm (e) {
         contentType:"application/json; charset=utf-8",
         dataType:"json",
         success: function(){
-            console.log('success');
+          console.log('success');
+          if(window.location.toString().indexOf('map') != -1) {
+            window.location.reload(true);
+          } else {
             window.location = '/rooms';
+          }
         },
         error: function (e) {
             $('.error').html(e.responseText).show();

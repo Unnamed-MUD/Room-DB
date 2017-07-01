@@ -1,116 +1,301 @@
-$(go);
+$(Start);
 
 var sun = new Image();
 var moon = new Image();
 var earth = new Image();
 
-var roomsList = [];
+var preRoomsList = [];
+var mapRoomsList = [];
 
 var ctx;
 
-var goalDistance = 100;
-var safeDistance = 120;
+var startRoomID; // string of ID of root room
 
-function go () {
+var width = 400;
+var height = 600;
+
+var roomSize = 40;
+
+var goalDistance = 100;
+var safeDistance = 60;
+
+var hoverRoom = null;
+
+function Start () {
   ctx = document.getElementById('canvas').getContext('2d');
-  ctx.font="15px Georgia";
+  ctx.translate(0.5, 0.5);
+  ctx.font="14px sans-serif";
   ctx.textAlign='center';
   ctx.baseline='middle';
 
   draw();
+
+  startRoomID = $('#start-room').attr('room-id');
 
   $.ajax({
       url:'/rooms/json',
       type:"GET",
       dataType:"json",
       success: function(data){
-          roomsList = data;
-          roomsList.forEach(function(room) {
-              SetupRoom(room);
-          });
-
+          preRoomsList = data;
+          LoadInRooms ();
       },
       error: function (e) {
-          console.log(e);
+          //console.log(e);
       }
   });
+
+  $('#canvas').click(HandleMapClick);
+  $( "#canvas" ).mousemove(HandleMouseMove);
 }
 
+function LoadInRooms () {
+  // preRoomsList.forEach(function(room) {
+  //     SetupRoom(room);
+  // });
+  var first = FindRoom(startRoomID, preRoomsList);
+  SetupRoom(first);
+  Teleport(first, width/2, height/2);
+  SpawnIn(first);
+  LoadExitRooms(first, 2);
+
+ // run 60 physics steps in a row before we start rendering
+ // let the thing setttle
+  for(var i = 0; i < 0; i++) {
+    mapRoomsList.forEach(function(room) {
+      UpdateRoom(room);
+    });
+  }
+}
+
+function LoadExitRooms (room, depth) {
+  if(depth < 0) return;
+  for(var i = 0; i < room.exits.length; i++) {
+    var exit = room.exits[i];
+    var nextRoom = FindRoom(exit.room, preRoomsList);
+    if(nextRoom != null) {
+      SetupRoom(nextRoom);
+      PlaceByCommand(room, nextRoom, exit.cmd);
+      SpawnIn(nextRoom);
+      LoadExitRooms(nextRoom, depth-1);
+    }
+  }
+
+  // find all the rooms that target this one that we didnt target
+  // for one way rooms
+  var oneWayExits = FindRoomTargets(room._id, preRoomsList);
+  for(i = 0; i < oneWayExits.length; i++) {
+    var nextRoom = oneWayExits[i];
+    SetupRoom(nextRoom);
+    PlaceByCommandReverse(room, nextRoom); // this is reversed
+    SpawnIn(nextRoom);
+    LoadExitRooms(nextRoom, depth-1);
+  }
+}
+
+function PlaceByCommand (room, nextRoom, command) {
+
+  if(command == 'west') {
+    Teleport(nextRoom, room.x - goalDistance, room.y);
+  } else if(command == 'east') {
+    Teleport(nextRoom, room.x + goalDistance, room.y);
+  } else if(command == 'south') {
+    Teleport(nextRoom, room.x, room.y + goalDistance);
+  } else if(command == 'north') {
+    Teleport(nextRoom, room.x, room.y - goalDistance);
+  } else if(command == 'up') {
+    Teleport(nextRoom, room.x - goalDistance* 0.6, room.y - goalDistance* 0.6);
+  } else if(command == 'down') {
+    Teleport(nextRoom, room.x + goalDistance* 0.6, room.y + goalDistance* 0.6);
+  } else {
+    Teleport(nextRoom, room.x + goalDistance* 0.6, room.y + goalDistance* 0.6);
+  }
+}
+
+function PlaceByCommandReverse (room, nextRoom) {
+  var command = '';
+  for(var i =0; i < nextRoom.exits.length; i++) {
+    var exit = nextRoom.exits[i];
+    if(exit.room == room._id) {
+      command = exit.cmd;
+    }
+  }
+
+  if(command == 'west') {
+    Teleport(nextRoom, room.x + goalDistance, room.y);
+  } else if(command == 'east') {
+    Teleport(nextRoom, room.x - goalDistance, room.y);
+  } else if(command == 'south') {
+    Teleport(nextRoom, room.x, room.y - goalDistance);
+  } else if(command == 'north') {
+    Teleport(nextRoom, room.x, room.y + goalDistance);
+  } else if(command == 'up') {
+    Teleport(nextRoom, room.x + goalDistance* 0.6, room.y + goalDistance * 0.6);
+  } else if(command == 'down') {
+    Teleport(nextRoom, room.x - goalDistance* 0.6, room.y - goalDistance * 0.6);
+  }else {
+    Teleport(nextRoom, room.x - goalDistance* 0.6, room.y - goalDistance* 0.6);
+  }
+}
 
 function draw() {
-//  var ctx = document.getElementById('canvas').getContext('2d');
-
-  ctx.fillStyle = 'rgb(240, 240, 255)';
+  ctx.fillStyle = 'rgb(235, 235, 245)';
   ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
-  ctx.fillRect(0,0, 800,600);
-
-
-  roomsList.forEach(function(room) {
-    GoRoom(room);
-  });
+  ctx.fillRect(0,0, width, height);
 
   RepulseRooms();
+
+
+  mapRoomsList.forEach(function(room) {
+    UpdateRoom(room);
+  });
+  mapRoomsList.forEach(function(room) {
+    DrawRoomBox(room);
+  });
+  mapRoomsList.forEach(function(room) {
+    DrawRoom(room);
+  });
+  mapRoomsList.forEach(function(room) {
+    DrawRoomTitle(room);
+  });
+
+
   //  ctx.fillRect(100,199 ,30, 30);
   window.requestAnimationFrame(draw);
 }
 
 function SetupRoom (room) {
-  room.x = Math.random() * 300 + 200;
-  room.y = Math.random() * 200 + 100;
+  room.x = Math.random() * 200 + width / 2 - 100;
+  room.y = Math.random() * 200 + width / 2 - 100;
   room.dx = room.x;
   room.dy = room.y;
+
 }
 
-function GoRoom (room) {
+function DrawRoomBox (room) {
+  ctx.strokeStyle = 'rgb(200,200,200)';
+  if(room._id == startRoomID) {
+    ctx.lineWidth = 2;
+    ctx.fillStyle='rgb(245,220,200)';
+  } else {
+    ctx.lineWidth = 1;
+    ctx.fillStyle='rgb(255,255,255)';
+  }
+  if(hoverRoom != null && room._id == hoverRoom._id) {
+    ctx.lineWidth = 6;
+  }
+  ctx.fillRect(room.x- roomSize/2,  room.y -roomSize/2, roomSize, roomSize);
+  ctx.strokeRect(room.x- roomSize/2,  room.y -roomSize/2, roomSize, roomSize);
+}
+
+function DrawRoomTitle (room) {
+    ctx.fillStyle='rgb(255,255,255)';
+    ctx.fillText(room.title,room.x +2,room.y -25+1, 100);
+    ctx.fillText(room.title,room.x -2,room.y -25, 100);
+    ctx.fillStyle='rgb(0,0,0)';
+    ctx.fillText(room.title,room.x,room.y -25, 100);
+}
+
+function DrawRoom (room) {
+  ctx.lineWidth = 1;
   ctx.strokeStyle = 'rgb(0, 0, 0)';
-  room.x += (Math.random() - 0.5) * 0.05;
-  room.y += (Math.random() - 0.5) * 0.05;
-
-  ctx.fillStyle='rgb(0,0,0)';
-  ctx.fillText(room.title,room.x,room.y -25);
-  ctx.fillStyle='rgb(255,255,255)';
-  ctx.fillRect(room.x- 20, room.y -20,40, 40);
-  ctx.strokeRect(room.x- 20, room.y -20,40, 40);
-
+  room.x += (Math.random() - 0.5) * 0.01;
+  room.y += (Math.random() - 0.5) * 0.01;
 
   room.exits.forEach(function(exit) {
-    target = FindRoom(exit.room);
+    target = FindRoom(exit.room, mapRoomsList);
+    if(target){
+      if(ExitInRoom(room._id, target)) {
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgb(0,0,0)';
+        DrawLine(room.x, room.y, target.x, target.y);
+      } else {
+        ctx.strokeStyle = 'rgb(100,0,0)';
+        ctx.lineWidth= 2;
+        DrawArrow(room.x, room.y, target.x, target.y);
+      }
+    }
+  });
+}
+
+function UpdateRoom (room) {
+  room.x += (Math.random() - 0.5) * 0.01;
+  room.y += (Math.random() - 0.5) * 0.01;
+
+  room.exits.forEach(function(exit) {
+    target = FindRoom(exit.room, mapRoomsList);
     if(target){
       var dis = Distance(room, target);
       var change = (goalDistance -dis) * 0.01;
       var angle = AngleTo(target, room);
       Move (room, angle, change * 0.5);
       Move (target, angle, change * -0.5);
-
-      DrawLine(room.x, room.y, target.x, target.y);
     }
   });
 
   var tempX = room.x;
   var tempY = room.y;
-  room.x += (room.x - room.dx)*0.98;
-  room.y += (room.y - room.dy)*0.98;
+  room.x += (room.x - room.dx)*0.97;
+  room.y += (room.y - room.dy)*0.97;
   room.dx = tempX;
   room.dy = tempY;
 
-  room.x = Math.max(50, Math.min(750, room.x));
-  room.y = Math.max(50, Math.min(650, room.y));
+  // room.x = Math.max(25, Math.min(width - 25, room.x));
+  // room.y = Math.max(25, Math.min(height -25, room.y));
+}
+
+function HandleMapClick(e){
+  var x = e.clientX, y = e.clientY;
+  ctx.fillStyle = 'rgb(0, 255, 0)';
+  ctx.fillRect(x,y,100,100);
+  x -= $(this)[0].getBoundingClientRect().left;
+  y -= $(this)[0].getBoundingClientRect().top;
+
+  var roomSide = roomSize / 2.0;
+  for(var i =0 ; i < mapRoomsList.length; i++){
+    var room = mapRoomsList[i];
+    if(x < room.x + roomSide && x > room.x -roomSide) {
+      if(y < room.y + roomSide && y > room.y -roomSide) {
+        window.location = '/map/' + room._id;
+        return;
+      }
+    }
+  }
+}
+
+function HandleMouseMove(e){
+  var x = e.clientX, y = e.clientY;
+  x -= $(this)[0].getBoundingClientRect().left;
+  y -= $(this)[0].getBoundingClientRect().top;
+
+  var roomSide = roomSize / 2.0;
+  for(var i =0 ; i < mapRoomsList.length; i++){
+    var room = mapRoomsList[i];
+    if(x < room.x + roomSide && x > room.x -roomSide) {
+      if(y < room.y + roomSide && y > room.y -roomSide) {
+
+        hoverRoom = room;
+        $('body').css('cursor', 'pointer');
+        return;
+      }
+    }
+  }
+  $('body').css('cursor', 'default');
+  hoverRoom = null;
 }
 
 function RepulseRooms () {
-  for(var i = 0; i < roomsList.length; i++ ){
-    var room1 = roomsList[i];
-    for(var k = 0; k < roomsList.length; k++ ){
-      var room2 = roomsList[k];
+  for(var i = 0; i < mapRoomsList.length; i++ ){
+    var room1 = mapRoomsList[i];
+    for(var k = 0; k < mapRoomsList.length; k++ ){
+      var room2 = mapRoomsList[k];
       if(room1 != room2) {
         var dis = Distance(room1, room2);
         if(dis < safeDistance) {
-          var change = (safeDistance -dis) * 0.005;
+          var change = (safeDistance -dis) * 0.002;
           var angle = AngleTo(room2, room1);
           Move (room1, angle, change * 0.5);
           Move (room2, angle, change * -0.5);
-        //  ctx.strokeStyle = 'rgba(255, 0, 0, 0.4)';
-      //    DrawLine(room1.x, room1.y, room2.x + Math.random()*4, room2.y+ Math.random()*4);
         }
       }
     }
@@ -118,13 +303,27 @@ function RepulseRooms () {
 }
 
 
-function FindRoom(id) {
-  for(var i =0 ; i < roomsList.length; i++){
-    if(roomsList[i]._id == id) {
-      return roomsList[i];
+function FindRoom(id, list) {
+  for(var i =0 ; i < list.length; i++){
+    if(list[i]._id == id) {
+      return list[i];
     }
   }
   return null;
+}
+
+function FindRoomTargets(id, list) {
+  var results = [];
+  for(var i =0 ; i < list.length; i++){
+    var room = list[i];
+      for(var k =0 ; k < room.exits.length; k++){
+        var exit = room.exits[k];
+        if(exit.room == id) {
+          results.push( list[i]);
+        }
+      }
+  }
+  return results;
 }
 
 function DrawLine (x,y, gx,gy){
@@ -132,6 +331,16 @@ function DrawLine (x,y, gx,gy){
   ctx.moveTo(x, y);
   ctx.lineTo(gx, gy);
   ctx.stroke();
+}
+
+function DrawArrow (x,y, gx, gy) {
+  var angle = Math.atan2(gy -y, gx -x);
+  DrawLine(x,y,gx,gy);
+
+  angle += 0.3;
+  DrawLine(Math.cos(angle) * -30 + gx, Math.sin(angle) * -30 + gy, gx, gy);
+  angle -= 0.6;
+  DrawLine(Math.cos(angle) * -30 + gx, Math.sin(angle) * -30 + gy, gx, gy);
 }
 
 function Distance(room, room2) {
@@ -151,4 +360,24 @@ function AngleTo(room1, room2) {
 function Move(room, angle, distance) {
   room.x += Math.cos(angle) * distance;
   room.y += Math.sin(angle) * distance;
+}
+
+function Teleport (room, x,y) {
+  room.x = room.dx = x;
+  room.y = room.dy = y;
+}
+
+function SpawnIn (room) {
+  mapRoomsList.push(room);
+  preRoomsList.splice(preRoomsList.indexOf(room), 1);
+}
+
+function ExitInRoom (id, room) {
+  for(var i = 0; i < room.exits.length; i++) {
+    var exit = room.exits[i];
+    if(exit.room == id) {
+      return true;
+    }
+  }
+  return false;
 }
