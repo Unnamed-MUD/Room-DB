@@ -32,6 +32,14 @@ a {
   text-decoration: none;
 }
 
+.menu-bar {
+  font-size: 16px;
+}
+
+.menu-bar a {
+  margin-right: 10px;
+}
+
 /* ROOM EDITOR */
 .room-editor-wrapper {
   width:500px;

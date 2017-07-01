@@ -35,7 +35,7 @@ $(function () {
   $('[name=room-filter]').on('keyup', UpdateSuggestions);
   $(document).on('click', '.room-suggestion', PickSuggestion);
 
-  $(document).on('click', '[name=exit-display]', ShowModal);
+  $(document).on('click focus', '[name=exit-display]', ShowModal);
   $('.modal').on('click', function (e){
     if(e.target == this) {
       HideModal();

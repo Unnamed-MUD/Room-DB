@@ -2,8 +2,7 @@ extends layout
 
 block content
   h2 Rooms
-  a(href="/rooms/new")
-    h3 New Room
+  include menu-bar.jade
   - var keys = Object.keys(sortedRooms);
   - for( var x = 0; x < keys.length; x++){
     - var key = keys[x]

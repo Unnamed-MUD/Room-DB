@@ -41,7 +41,7 @@ function Start () {
           LoadInRooms ();
       },
       error: function (e) {
-          console.log(e);
+          //console.log(e);
       }
   });
 
@@ -81,21 +81,20 @@ function LoadExitRooms (room, depth) {
     }
   }
 
+  // find all the rooms that target this one that we didnt target
+  // for one way rooms
   var oneWayExits = FindRoomTargets(room._id, preRoomsList);
   for(i = 0; i < oneWayExits.length; i++) {
-  //  var exit = oneWayExits[i];
     var nextRoom = oneWayExits[i];
-    console.log('checking up on ' + nextRoom.title);
-    if(nextRoom != null) {
-      SetupRoom(nextRoom);
-      PlaceByCommandReverse(room, nextRoom, exit.cmd); // this is reversed
-      SpawnIn(nextRoom);
-      LoadExitRooms(nextRoom, depth-1);
-    }
+    SetupRoom(nextRoom);
+    PlaceByCommandReverse(room, nextRoom); // this is reversed
+    SpawnIn(nextRoom);
+    LoadExitRooms(nextRoom, depth-1);
   }
 }
 
 function PlaceByCommand (room, nextRoom, command) {
+
   if(command == 'west') {
     Teleport(nextRoom, room.x - goalDistance, room.y);
   } else if(command == 'east') {
@@ -113,7 +112,15 @@ function PlaceByCommand (room, nextRoom, command) {
   }
 }
 
-function PlaceByCommandReverse (room, nextRoom, command) {
+function PlaceByCommandReverse (room, nextRoom) {
+  var command = '';
+  for(var i =0; i < nextRoom.exits.length; i++) {
+    var exit = nextRoom.exits[i];
+    if(exit.room == room._id) {
+      command = exit.cmd;
+    }
+  }
+
   if(command == 'west') {
     Teleport(nextRoom, room.x + goalDistance, room.y);
   } else if(command == 'east') {
@@ -201,11 +208,12 @@ function DrawRoom (room) {
       if(ExitInRoom(room._id, target)) {
         ctx.lineWidth = 3;
         ctx.strokeStyle = 'rgb(0,0,0)';
+        DrawLine(room.x, room.y, target.x, target.y);
       } else {
         ctx.strokeStyle = 'rgb(100,0,0)';
-        ctx.lineWidth= 1;
+        ctx.lineWidth= 2;
+        DrawArrow(room.x, room.y, target.x, target.y);
       }
-      DrawLine(room.x, room.y, target.x, target.y);
     }
   });
 }
@@ -246,10 +254,8 @@ function HandleMapClick(e){
   var roomSide = roomSize / 2.0;
   for(var i =0 ; i < mapRoomsList.length; i++){
     var room = mapRoomsList[i];
-    console.log(x + ' ' + room.x);
     if(x < room.x + roomSide && x > room.x -roomSide) {
       if(y < room.y + roomSide && y > room.y -roomSide) {
-        console.log('hit! ' + room.title);
         window.location = '/map/' + room._id;
         return;
       }
@@ -262,7 +268,6 @@ function HandleMouseMove(e){
   x -= $(this)[0].getBoundingClientRect().left;
   y -= $(this)[0].getBoundingClientRect().top;
 
-  console.log(x + ' ' + y);
   var roomSide = roomSize / 2.0;
   for(var i =0 ; i < mapRoomsList.length; i++){
     var room = mapRoomsList[i];
@@ -325,6 +330,16 @@ function DrawLine (x,y, gx,gy){
   ctx.moveTo(x, y);
   ctx.lineTo(gx, gy);
   ctx.stroke();
+}
+
+function DrawArrow (x,y, gx, gy) {
+  var angle = Math.atan2(gy -y, gx -x);
+  DrawLine(x,y,gx,gy);
+
+  angle += 0.3;
+  DrawLine(Math.cos(angle) * -30 + gx, Math.sin(angle) * -30 + gy, gx, gy);
+  angle -= 0.6;
+  DrawLine(Math.cos(angle) * -30 + gx, Math.sin(angle) * -30 + gy, gx, gy);
 }
 
 function Distance(room, room2) {
