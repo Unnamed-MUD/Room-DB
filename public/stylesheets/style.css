@@ -1,6 +1,27 @@
 body {
-  padding: 50px;
+  margin:0px;
+  padding:0px;
+  background: #eee;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#main-container {
+  margin:0px auto;
+  width:950px;
+  padding: 20px;
+  background: #fff;
+}
+
+.clear {
+  clear:both;
+}
+
+.float-right {
+  float:right;
+}
+
+.hidden {
+  display: none;
 }
 
 a {
@@ -12,6 +33,15 @@ a {
 }
 
 /* ROOM EDITOR */
+.error {
+  display:none;
+  background: #ffa9a9;
+  font-size: 15px;
+  border-radius: 5px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
 .field {
   margin-bottom: 15px;
 }
@@ -40,15 +70,138 @@ a {
   margin-right: 20px;
 }
 
-.exit-editor {
-  background: #f8f8f8;
+.exit-object {
+  background: #eee;
   padding: 10px;
+  width:320px;
   border-radius: 5px;
-  width: 400px;
   margin-bottom: 10px;
+}
+.exit-object:hover {
+  width:400px;
+}
+
+.exit-left {
+  float:left;
+  width:320px;
+}
+.exit-right {
+  float:left;
+  display:none;
+}
+.exit-object:hover .exit-right {
+  display: block;
+}
+
+#exit-object-template {
+  display: none;
+}
+
+.add-exit {
+  margin-left: 20px;
+}
+
+#post-room {
+  background: #cfc;
+  font-size: 16px;
+  border:1px solid grey;
+  border-radius: 5px;
+}
+
+#update-room {
+  background: #cfc;
+  font-size: 16px;
+  border:1px solid grey;
+  border-radius: 5px;
+  float:right;
+}
+
+.button-wrangler {
+  width:300px;
+  height:20px;
+}
+
+.check-option {
+  padding:10px;
+  font-size: 16px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+.modal-cover {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  opacity: 0.3;
+}
+
+/* Modal Content */
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  border-radius: 10px;
+  padding:15px;
+  margin: 100px auto;
+  width: 700px;
+}
+
+.room-suggestion {
+  font-size: 16px;
+  padding:10px;
+
+}
+
+.room-suggestion:hover {
+  cursor: pointer;
+  background: #eef;
+}
+
+.room-suggestion-content {
+  font-style: italic;
+  font-size: 15px;
+}
+
+.room-suggestion+.room-suggestion {
+  border-top: 1px solid grey;
+}
+
+#room-suggestion-template {
+  display: none;
+}
+
+hr {
+  max-width: 500px;
+    margin: 20px 0px;
+    height: 0px;
+
+    border: 1px solid #ccc;
+}
+
+[name=exit-display]:hover {
+  cursor: pointer;
+}
+
+[name=exit-display] {
+  border:none !important;
 }
 
 /* ROOMS LIST */
+/* -------------------------------- */
+
 .area-title {
   padding-top: 30px;
   padding-bottom: 5px;
@@ -69,6 +222,8 @@ a {
   font-size:16px;
 }
 .room-content {
+  font-size: 16px;
+  padding: 5px 0px 10px 0px;
   font-style: italic;
 }
 

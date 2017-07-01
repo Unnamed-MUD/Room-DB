@@ -31,12 +31,22 @@ var Room = mongoose.model('Room',{
 });
 
 
+router.get('/map', function (req, res, next) {
+	res.render('map');
+});
+
 router.get('/rooms', function (req, res, next) {
   Room.find().sort('area').exec(function (err, rooms) {
    res.render('rooms', {
 		 rooms:rooms,
 		 sortedRooms:sortIntoAreas(rooms),
 	 });
+  });
+});
+
+router.get('/rooms/json', function (req, res, next) {
+  Room.find().sort('area').exec(function (err, rooms) {
+   res.send(rooms);
   });
 });
 
@@ -97,16 +107,20 @@ router.post('/rooms', function(req, res, next) {
     }
   });
 });
+
 router.post('/rooms/:id',function(req,res,next){
-	Room.update({ _id: req.params.id }, { $set: req.body }, function(err) {
+	console.log(req.body);
+	Room.update({ _id: req.params.id }, { $set: req.body }, function(err, room) {
 		if (err) {
+			res.statusCode = 500;
 			res.send(err.message);
 		}else {
-			res.send({mesage:"Something interesting"});	
+			res.send({mesage:"Inserted room!", room:room});
 		}
-		
+
 	});
 });
+
 function sortIntoAreas (rooms) {
 	var output = {};
 	for(var i = 0; i < rooms.length; i++) {
