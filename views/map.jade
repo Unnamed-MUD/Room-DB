@@ -1,7 +1,9 @@
 extends layout
 
 block content
-  h1 Map
-  script(src='/javascripts/jquery-3.2.1.min.js')
+  div(class='hidden' id='start-room' room-id=room._id)
   script(src='/javascripts/map.js')
   canvas(id='canvas' width=400 height=600)
+  div(class='room-editor-wrapper')
+    include room-editor.jade
+  div(class='clear')

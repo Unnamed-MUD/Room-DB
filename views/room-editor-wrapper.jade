@@ -1,0 +1,7 @@
+extends layout
+
+block content
+  h2
+    a(href='/rooms', class="plain-link")= "Rooms - "
+    =room ? "Edit " + room.title : "New Room"
+  include room-editor.jade

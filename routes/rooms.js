@@ -32,7 +32,16 @@ var Room = mongoose.model('Room',{
 
 
 router.get('/map', function (req, res, next) {
-	res.render('map');
+	// redirect to town square map
+	res.redirect('/map/59550bdb460b5eb24709fee6');
+});
+
+router.get('/map/:id', function (req, res, next) {
+  Room.find().distinct('area', function (err, areas) {
+		Room.findOne({'_id': req.params.id}).populate('exits.room').exec(function (err, room){
+			res.render('map', {room:room, areas: areas});
+		});
+	});
 });
 
 router.get('/rooms', function (req, res, next) {
@@ -54,7 +63,7 @@ router.get('/rooms/json', function (req, res, next) {
 router.get('/rooms/new', function (req, res, next) {
   Room.find().distinct('area', function (err, areas) {
 		// use the editor template, but dont have a room subobject passed in
-    res.render('room-editor', {areas:areas});
+    res.render('room-editor-wrapper', {areas:areas});
   });
 });
 
@@ -67,7 +76,7 @@ router.get('/rooms/:id', function (req, res, next) {
 			if(room == null) {
 				return res.redirect('/rooms');
 			}
-	    res.render('room-editor', {areas:areas, room:	room});
+	    res.render('room-editor-wrapper', {areas:areas, room:	room});
 		});
   });
 });
