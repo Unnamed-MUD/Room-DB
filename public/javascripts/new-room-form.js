@@ -152,6 +152,8 @@ function getData() {
         title: $('[name=title]').val(),
         area: $('[name=area]').val(),
         content: $('[name=content]').val(),
+        waitMod: $('[name=waitMod]').val(),
+        moveMod: $('[name=moveMod]').val(),
         exits: [],
         light: $('[name=light]').is(':checked'),
         outdoors: $('[name=outdoors]').is(':checked'),

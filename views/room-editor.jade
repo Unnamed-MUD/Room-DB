@@ -12,6 +12,12 @@ mixin exitObject(exit)
 			button(class='remove-exit') Remove Exit
 		div(class='clear')
 
+- function zero(value)
+	- if(typeof value == "number") {
+		- return value;
+	- }else {
+		- return 0;
+	- }
 
 script(src='/javascripts/new-room-form.js')
 if room
@@ -41,6 +47,13 @@ form(id="room-editor")
 	div(class='field')
 		span(class='label') Content
 		textarea(name='content')= room ? room.content : 'A blank room'
+	br
+	div(class='field')
+		span(class='label') waitMod
+		input(name='waitMod' type="number" value=room ? zero(room.waitMod) : 0)
+	div(class='field')
+		span(class='label') moveMod
+		input(name='moveMod' type="number" value=room ? zero(room.moveMod) : 0)
 	br
 	div(class='field')
 		span(class='label') Items

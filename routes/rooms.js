@@ -6,6 +6,15 @@ var mongoose = require("mongoose");
 var schema = mongoose.Schema;
 mongoose.connect('mongodb://localhost/test');
 
+function cleanFields(room) {
+	if (room.waitMod < 1) {
+		delete room.waitMod;
+	}
+	if (room.moveMod < 1){
+		delete room.moveMod;
+	}
+}
+
 
 
 var Room = mongoose.model('Room',{
@@ -16,6 +25,8 @@ var Room = mongoose.model('Room',{
 	"outdoors": {type:Boolean, default:false},
 	"preventDecay": {type:Boolean,default:false},
 	"preventRecall": {type:Boolean,default:false},
+	"waitMod":{type:Number},
+	"moveMod":{type:Number},
 	//  "waitMod": {
 	// 	 type: Number,
 	// 	 default: 0
@@ -104,10 +115,11 @@ router.delete('/rooms/:id', function (req, res, next) {
 		}
 	});
 });
-
+//Create new room.
 router.post('/rooms', function(req, res, next) {
   // mongoose filters input to match schema by default
   // we can just push the json in the body into the model :)
+  cleanFields(req.body);
   var newRoom = new Room(req.body);
 
   newRoom.save(function (err, room) {
@@ -121,9 +133,9 @@ router.post('/rooms', function(req, res, next) {
     }
   });
 });
-
+//Update room.
 router.post('/rooms/:id',function(req,res,next){
-	console.log(req.body);
+	cleanFields(req.body);
 	Room.update({ _id: req.params.id }, { $set: req.body }, function(err, room) {
 		if (err) {
 			res.statusCode = 500;
