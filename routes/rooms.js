@@ -27,7 +27,8 @@ var Room = mongoose.model('Room',{
 		"room": {type: schema.Types.ObjectId, ref: 'Room'}
 	}],
 	// "monsters": [String],
-	"items": [{type:String, trim: true}]
+	"items": [{type:String, trim: true}],
+	"monsters": [{type:String, trim: true}]
 });
 
 
