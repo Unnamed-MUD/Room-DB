@@ -108,22 +108,28 @@ function putForm (e) {
     });
 
 }
+function formatList(input) {
+    // take out all spaces
+    items = input.replace(/ /g, '');
+    // cut into array
+    var inputArray = input.split(',');
+    // remove empties
+    for(var i = inputArray.length; i--; i >= 0) {
+        if(inputArray[i] == '') {
+            inputArray.splice(i, 1);
+        }
+    }
+    return inputArray;
+}
 // make an array out of the string list
 function GetItems () {
     var items = $('[name=items]').val();
-    // take out all spaces
-    items = items.replace(/ /g, '');
-    // cut into array
-    var itemsArray = items.split(',');
-    // remove empties
-    for(var i = itemsArray.length; i--; i >= 0) {
-        if(itemsArray[i] == '') {
-            itemsArray.splice(i, 1);
-        }
-    }
-    return itemsArray;
+    return formatList(items);
 }
-
+function GetMonsters () {
+    var monsters = $('[name=monsters]').val();
+    return formatList(monsters);
+}
 function GetExits() {
   var $exits = $('#exits-list .exit-object');
   var exits = [];
@@ -146,12 +152,17 @@ function getData() {
         title: $('[name=title]').val(),
         area: $('[name=area]').val(),
         content: $('[name=content]').val(),
+        waitMod: $('[name=waitMod]').val(),
+        moveMod: $('[name=moveMod]').val(),
         exits: [],
         light: $('[name=light]').is(':checked'),
-        outdoors: $('[name=outdoors]').is(':checked')
+        outdoors: $('[name=outdoors]').is(':checked'),
+        preventDecay: $('[name=preventDecay]').is(':checked'),
+        preventRecall: $('[name=preventRecall]').is(':checked'),
     };
     body.exits = GetExits();
     body.items = GetItems();
+    body.monsters = GetMonsters();
     console.log(body);
     return body;
 }
