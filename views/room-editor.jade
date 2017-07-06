@@ -55,6 +55,13 @@ form(id="room-editor")
 	span(class='check-option')
 		input(id='outdoors-box', name='outdoors', type='checkbox', checked=room ? room.outdoors : false)
 		label(for='outdoors-box') Outdoors
+
+	span(class='check-option')
+		input(id='preventRecall-box', name='preventRecall', type='checkbox', checked=room ? room.preventRecall : false)
+		label(for='preventRecall-box') preventRecall
+	span(class='check-option')
+		input(id='preventDecay-box', name='preventDecay', type='checkbox', checked=room ? room.preventDecay : false)
+		label(for='preventDecay-box') preventDecay
 	br
 	hr
 	h3 Exits

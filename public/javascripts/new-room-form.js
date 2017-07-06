@@ -154,7 +154,9 @@ function getData() {
         content: $('[name=content]').val(),
         exits: [],
         light: $('[name=light]').is(':checked'),
-        outdoors: $('[name=outdoors]').is(':checked')
+        outdoors: $('[name=outdoors]').is(':checked'),
+        preventDecay: $('[name=preventDecay]').is(':checked'),
+        preventRecall: $('[name=preventRecall]').is(':checked'),
     };
     body.exits = GetExits();
     body.items = GetItems();

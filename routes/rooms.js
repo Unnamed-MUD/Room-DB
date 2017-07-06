@@ -14,6 +14,8 @@ var Room = mongoose.model('Room',{
 	"content": String,
 	"light": {type:Boolean, default:true},
 	"outdoors": {type:Boolean, default:false},
+	"preventDecay": {type:Boolean,default:false},
+	"preventRecall": {type:Boolean,default:false},
 	//  "waitMod": {
 	// 	 type: Number,
 	// 	 default: 0
