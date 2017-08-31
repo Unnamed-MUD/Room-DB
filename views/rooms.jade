@@ -19,7 +19,12 @@ block content
           if rooms[i].items.length > 0
             |Items: 
             for item in rooms[i].items
-              span(class="item")= item+ ", "
+              span(class="item")= item + ", "
+            br
+          if rooms[i].monsters.length > 0
+            |Monsters: 
+            for item in rooms[i].monsters
+              span(class="item")= item + ", "
             br
           if rooms[i].exits.length < 1
             span(class='item') No Exits
