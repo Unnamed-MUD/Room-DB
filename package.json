@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "restore": "mongo --eval 'db.dropDatabase();';node ./tools/restoretestdb.js",
-    "dump": "node ./tools/dumpdb.js"
+    "dump": "node ./tools/dumpdb.js",
+    "local": "node run-local.js",
+    "remote": "node run-remote.js"
   },
   "dependencies": {
     "body-parser": "^1.13.3",

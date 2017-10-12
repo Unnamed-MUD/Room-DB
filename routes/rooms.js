@@ -4,7 +4,17 @@ var router = express.Router();
 
 var mongoose = require("mongoose");
 var schema = mongoose.Schema;
-mongoose.connect('mongodb://localhost/test');
+
+// construct URL,
+var baseURL = 'mongodb://';
+if(process.env.DB_USER){
+	// local DB doesn't need use pass so we skip if undefined
+	baseURL += process.env.DB_USER + ':' + process.env.DB_PASS + '@';
+}
+baseURL += process.env.DB_HOST;
+console.log(baseURL);
+
+mongoose.connect(baseURL);
 
 function cleanFields(room) {
 	if (room.waitMod < 1) {
