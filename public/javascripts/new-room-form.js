@@ -3,6 +3,10 @@ var roomsList = [];
 
 var $autocompleteTarget = null; // which field we put the room id once user picks a suggestion
 
+var modalIsUp = false;
+
+var titleMatches = [];
+
 $(function () {
   $.ajax({
       url:'/rooms/json',
@@ -52,7 +56,6 @@ $(function () {
 
 
 function removeExit(e) {
-  console.log('remove?');
   e.preventDefault();
   $(this).closest('.exit-object').remove();
 }
@@ -110,9 +113,12 @@ function putForm (e) {
 }
 function formatList(input) {
     // take out all spaces
+    console.log(input)
     items = input.replace(/ /g, '');
+    console.log(items)
     // cut into array
-    var inputArray = input.split(',');
+    var inputArray = items.split(',');
+    console.log(inputArray)
     // remove empties
     for(var i = inputArray.length; i--; i >= 0) {
         if(inputArray[i] == '') {
@@ -163,7 +169,6 @@ function getData() {
     body.exits = GetExits();
     body.items = GetItems();
     body.monsters = GetMonsters();
-    console.log(body);
     return body;
 }
 
@@ -171,7 +176,7 @@ function UpdateSuggestions () {
   $('#suggestions').empty();
   var $template = $('#room-suggestion-template').find('.room-suggestion');
 
-  var titleMatches = [];
+  titleMatches = [];
   var searchString = $(this).val().toLowerCase();
 
   for(var i = 0; i < roomsList.length; i++) {
@@ -214,7 +219,7 @@ function AddExitElement (e) {
 
 function ShowModal (e){
   $autocompleteTarget = $(this).first().parent();
-
+  modalIsUp = true;
   $('.modal').show();
   $('.modal-cover').show();
   $('[name=room-filter]').val('').focus();
@@ -222,6 +227,7 @@ function ShowModal (e){
 }
 
 function HideModal () {
+    modalIsUp = false;
   $autocompleteTarget = null;
   $('.modal').hide();
   $('.modal-cover').hide();

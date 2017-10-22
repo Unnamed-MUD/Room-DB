@@ -12,7 +12,6 @@ if(process.env.DB_USER){
 	baseURL += process.env.DB_USER + ':' + process.env.DB_PASS + '@';
 }
 baseURL += process.env.DB_HOST;
-console.log(baseURL);
 
 mongoose.connect(baseURL);
 
@@ -131,7 +130,6 @@ router.post('/rooms', function(req, res, next) {
   // we can just push the json in the body into the model :)
   cleanFields(req.body);
   var newRoom = new Room(req.body);
-
   newRoom.save(function (err, room) {
     if (err) {
       console.log(err);
