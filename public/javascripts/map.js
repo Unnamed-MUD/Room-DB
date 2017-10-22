@@ -21,6 +21,19 @@ var safeDistance = 60;
 
 var hoverRoom = null;
 
+hashCode = function(s){
+  s += "d";
+  return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+}
+
+function colorFromArea (s) {
+  var result = "" + hashCode(s);
+  var r = (150 + parseInt(result.substring(0,2)) );
+  var g = (50 + parseInt(result.substring(2,4)) * 2);
+  var b = (50 + parseInt(result.substring(4,6)) * 2);
+  return "rgb(" +  r +"," + g +"," + b +")";
+}
+
 function Start () {
   ctx = document.getElementById('canvas').getContext('2d');
   ctx.translate(0.5, 0.5);
@@ -173,14 +186,14 @@ function SetupRoom (room) {
 }
 
 function DrawRoomBox (room) {
-  ctx.strokeStyle = 'rgb(200,200,200)';
-  if(room._id == startRoomID) {
-    ctx.lineWidth = 2;
-    ctx.fillStyle='rgb(245,220,200)';
+  ctx.strokeStyle = 'rgb(100,100,100)';
+   if(room._id == startRoomID) {
+     ctx.lineWidth = 2;
+       ctx.strokeStyle = 'rgb(0,0,0)';
   } else {
     ctx.lineWidth = 1;
-    ctx.fillStyle='rgb(255,255,255)';
   }
+  ctx.fillStyle = colorFromArea(room.area);
   if(hoverRoom != null && room._id == hoverRoom._id) {
     ctx.lineWidth = 6;
   }

@@ -52,7 +52,6 @@ $(function () {
 
 
 function removeExit(e) {
-  console.log('remove?');
   e.preventDefault();
   $(this).closest('.exit-object').remove();
 }
@@ -110,9 +109,12 @@ function putForm (e) {
 }
 function formatList(input) {
     // take out all spaces
+    console.log(input)
     items = input.replace(/ /g, '');
+    console.log(items)
     // cut into array
-    var inputArray = input.split(',');
+    var inputArray = items.split(',');
+    console.log(inputArray)
     // remove empties
     for(var i = inputArray.length; i--; i >= 0) {
         if(inputArray[i] == '') {
@@ -163,7 +165,6 @@ function getData() {
     body.exits = GetExits();
     body.items = GetItems();
     body.monsters = GetMonsters();
-    console.log(body);
     return body;
 }
 
