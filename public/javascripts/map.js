@@ -28,9 +28,9 @@ hashCode = function(s){
 
 function colorFromArea (s) {
   var result = "" + hashCode(s);
-  var r = (150 + parseInt(result.substring(0,2)) );
-  var g = (50 + parseInt(result.substring(2,4)) * 2);
-  var b = (50 + parseInt(result.substring(4,6)) * 2);
+  var r = (150 + parseInt(result.substring(0,2)));
+  var g = (150 + parseInt(result.substring(2,4)));
+  var b = (150 + parseInt(result.substring(4,6)));
   return "rgb(" +  r +"," + g +"," + b +")";
 }
 
@@ -70,7 +70,7 @@ function LoadInRooms () {
   SetupRoom(first);
   Teleport(first, width/2, height/2);
   SpawnIn(first);
-  LoadExitRooms(first, 2);
+  LoadExitRooms(first, 3);
 
  // run 60 physics steps in a row before we start rendering
  // let the thing setttle
@@ -152,9 +152,10 @@ function PlaceByCommandReverse (room, nextRoom) {
 }
 
 function draw() {
-  ctx.fillStyle = 'rgb(235, 235, 245)';
+
+  ctx.fillStyle = 'rgb(245, 245, 245)';
   ctx.strokeStyle = 'rgba(0, 153, 255, 0.4)';
-  ctx.fillRect(0,0, width, height);
+  ctx.fillRect(-width ,-height, width*2, height*2);
 
   RepulseRooms();
 
@@ -199,6 +200,19 @@ function DrawRoomBox (room) {
   }
   ctx.fillRect(room.x- roomSize/2,  room.y -roomSize/2, roomSize, roomSize);
   ctx.strokeRect(room.x- roomSize/2,  room.y -roomSize/2, roomSize, roomSize);
+
+  if(room.items && room.items.length > 0) {
+    ctx.fillStyle = ('rgb(50, 50, 255)');
+    ctx.beginPath();
+    ctx.arc(room.x+10, room.y+10, 6, 0, Math.PI * 2, true);
+    ctx.fill();
+  }
+  if(room.monsters && room.monsters.length > 0) {
+    ctx.fillStyle = ('rgb(255, 50, 50)');
+    ctx.beginPath();
+    ctx.arc(room.x-10, room.y-10, 6, 0, Math.PI * 2, true);
+    ctx.fill();
+  }
 }
 
 function DrawRoomTitle (room) {

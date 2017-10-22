@@ -3,6 +3,10 @@ var roomsList = [];
 
 var $autocompleteTarget = null; // which field we put the room id once user picks a suggestion
 
+var modalIsUp = false;
+
+var titleMatches = [];
+
 $(function () {
   $.ajax({
       url:'/rooms/json',
@@ -172,7 +176,7 @@ function UpdateSuggestions () {
   $('#suggestions').empty();
   var $template = $('#room-suggestion-template').find('.room-suggestion');
 
-  var titleMatches = [];
+  titleMatches = [];
   var searchString = $(this).val().toLowerCase();
 
   for(var i = 0; i < roomsList.length; i++) {
@@ -215,7 +219,7 @@ function AddExitElement (e) {
 
 function ShowModal (e){
   $autocompleteTarget = $(this).first().parent();
-
+  modalIsUp = true;
   $('.modal').show();
   $('.modal-cover').show();
   $('[name=room-filter]').val('').focus();
@@ -223,6 +227,7 @@ function ShowModal (e){
 }
 
 function HideModal () {
+    modalIsUp = false;
   $autocompleteTarget = null;
   $('.modal').hide();
   $('.modal-cover').hide();
